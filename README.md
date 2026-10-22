@@ -1,16 +1,21 @@
-## Hi there 👋
+# SMARTSYTES
 
-<!--
-**smartsytes/smartsytes** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+**Modern websites that convert.**
 
-Here are some ideas to get you started:
+SMARTSYTES is an Irving, Texas agency helping small and medium businesses get online and get found. We design and build fast, mobile-friendly WordPress websites and apps, with hosting and updates to support your online presence.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## Services
+
+- Web design and WordPress development
+- Web hosting and maintenance
+- SEO
+- Mobile app development
+- Graphic design and branding
+- Social media content
+
+## Contact
+
+- Website: https://smartsytes.com
+- Email: info@smartsytes.com
+- Phone: +1 682-347-6026
+- Address: 1404 W Walnut Hill Ln, Ste 118, Irving, TX 75038
