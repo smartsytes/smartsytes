@@ -42,8 +42,8 @@ function RequiresApi({ children }: { children: React.ReactNode }) {
   const serving = useServing();
   return serving === "static" ? (
     <Unavailable
-      title="This screen isn't on this copy of the site."
-      detail="The kitchen board needs the ordering service, and this copy is served as plain files. Staff should use the hosted version."
+      title="This screen isn't available on this site."
+      detail="The kitchen board needs the ordering service, which this copy doesn't include. Staff should use the hosted version."
     />
   ) : (
     <>{children}</>

@@ -32,8 +32,8 @@ export function AppStatic() {
             path="/checkout"
             element={
               <Unavailable
-                title="Online ordering isn't available on this copy of the site."
-                detail={`This copy is served as plain files, so there is no checkout. Call ${SITE.phone} and we'll take your order for pickup or delivery.`}
+                title="Online ordering isn't available on this site."
+                detail={`Call ${SITE.phone} and the kitchen will take your order for pickup or delivery.`}
               />
             }
           />
@@ -41,8 +41,8 @@ export function AppStatic() {
             path="/checkout/success"
             element={
               <Unavailable
-                title="Online ordering isn't available on this copy of the site."
-                detail={`This copy is served as plain files, so there are no online receipts. Call ${SITE.phone} with any questions about an order.`}
+                title="Online ordering isn't available on this site."
+                detail={`There are no online receipts here. Call ${SITE.phone} with any questions about an order.`}
               />
             }
           />
@@ -50,8 +50,8 @@ export function AppStatic() {
             path="/order/:sessionId"
             element={
               <Unavailable
-                title="Order changes aren't available on this copy of the site."
-                detail={`This copy is served as plain files and can't change an online order. Call ${SITE.phone} and we'll sort it out.`}
+                title="Changing an online order isn't available on this site."
+                detail={`Call ${SITE.phone} and we'll change or cancel it for you.`}
               />
             }
           />
@@ -59,8 +59,8 @@ export function AppStatic() {
             path="/kitchen"
             element={
               <Unavailable
-                title="This screen isn't on this copy of the site."
-                detail="The kitchen board needs the ordering service, and this copy is served as plain files. Staff should use the hosted version."
+                title="This screen isn't available on this site."
+                detail="The kitchen board needs the ordering service, which this copy doesn't include. Staff should use the hosted version."
               />
             }
           />
@@ -68,8 +68,8 @@ export function AppStatic() {
             path="/kitchen/ticket/:sessionId"
             element={
               <Unavailable
-                title="This screen isn't on this copy of the site."
-                detail="Ticket printing needs the ordering service, and this copy is served as plain files. Staff should use the hosted version."
+                title="This screen isn't available on this site."
+                detail="Ticket printing needs the ordering service, which this copy doesn't include. Staff should use the hosted version."
               />
             }
           />

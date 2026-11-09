@@ -177,12 +177,11 @@ export function Checkout() {
             <ShoppingBag className="size-7" strokeWidth={1.5} />
           </span>
           <h1 className="mt-5 font-display text-[clamp(1.9rem,4.4vw,2.6rem)] font-semibold leading-tight">
-            Online ordering isn&apos;t available on this copy of the site.
+            Online ordering isn&apos;t available on this site.
           </h1>
           <p className="mt-3 text-[0.9rem] leading-relaxed text-muted">
-            This version is served as plain files, so it can&apos;t take a card
-            payment. Call the kitchen and we&apos;ll get your order started —
-            pickup on Preston Road or delivery across Plano.
+            Call the kitchen and we&apos;ll get your order started — pickup on
+            Preston Road or delivery across Plano.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <a href={SITE.phoneHref} className="btn btn-gold">
