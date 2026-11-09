@@ -1,0 +1,21 @@
+/*
+Theme Name: Daqs & Oxtails
+Theme URI: https://daqsandoxtails.com/
+Author: Smartsytes
+Author URI: https://smartsytes.com/
+Description: The Daqs & Oxtails marketing site - home, menu, catering, about and visit - with a phone-ordering banner instead of a checkout. The design is a prebuilt app loaded from this theme's assets folder; WordPress supplies the document and the URLs.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 7.1
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: daqs-oxtails
+*/
+
+/* The app paints the whole viewport, so the document starts flush. */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}

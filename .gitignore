@@ -1,6 +1,9 @@
 node_modules
 dist
 dist-worker
+dist-wp
+wordpress/daqs-oxtails/assets/
+artifacts/*.zip
 .DS_Store
 *.local
 .env

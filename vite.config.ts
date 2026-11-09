@@ -232,19 +232,50 @@ function cpanelVariant(): Plugin {
   };
 }
 
+/**
+ * The WordPress theme loads the same build from /wp-content/themes/<slug>/assets,
+ * so the image URLs baked into the bundle have to move with it.
+ */
+function wpAssetPaths(base: string): Plugin {
+  return {
+    name: "daqs-wp-asset-paths",
+    enforce: "post",
+    generateBundle(_options, bundle) {
+      for (const entry of Object.values(bundle)) {
+        if (entry.type === "chunk") {
+          entry.code = entry.code.split("/img/").join(`${base}img/`);
+        } else if (typeof entry.source === "string" && /\.(css|html)$/.test(entry.fileName)) {
+          entry.source = entry.source
+            .split("/img/")
+            .join(`${base}img/`)
+            .split("/favicon.svg")
+            .join(`${base}favicon.svg`);
+        }
+      }
+    },
+  };
+}
+
 // Preview hosts are supplied per-session through
 // __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS by the cloud preview runtime.
 export default defineConfig(({ mode }) => {
   // `vite build --mode cpanel` produces the static upload: marketing pages only.
-  const cpanel = mode === "cpanel";
+  // `--mode wp` is the same app packaged for the WordPress theme.
+  const wp = mode === "wp";
+  const cpanel = mode === "cpanel" || wp;
+  // The theme serves its assets from its own folder, so hashed filenames and
+  // images must be addressed there rather than at the site root.
+  const assetBase = wp ? "/wp-content/themes/daqs-oxtails/assets/" : "/";
 
   // Inline env vars (KITCHEN_PASSWORD=… npm run dev) win over .env, which is
   // how the board gets a throwaway password during local testing.
   const env = { ...loadEnv(mode, process.cwd(), ""), ...process.env };
 
   return {
+    base: assetBase,
     plugins: [
       ...(cpanel ? [cpanelVariant()] : []),
+      ...(wp ? [wpAssetPaths(assetBase)] : []),
       react(),
       tailwindcss(),
       catalogAndApi(
@@ -256,7 +287,7 @@ export default defineConfig(({ mode }) => {
     ],
     build: {
       // The Worker serves the full app; the cPanel copy is built without it.
-      outDir: cpanel ? "dist" : "dist-worker",
+      outDir: wp ? "dist-wp" : cpanel ? "dist" : "dist-worker",
       emptyOutDir: true,
     },
     server: {

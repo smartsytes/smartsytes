@@ -7,6 +7,8 @@
     "dev": "vite --host 0.0.0.0 --port 3003",
     "build": "tsc --noEmit && vite build",
     "build:cpanel": "vite build --mode cpanel",
+    "build:wp": "vite build --mode wp",
+    "theme": "node scripts/build-theme.mjs",
     "deploy": "node scripts/deploy.mjs",
     "typecheck": "tsc --noEmit",
     "check:checkout": "node scripts/check-checkout.mjs",
