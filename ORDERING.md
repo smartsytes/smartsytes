@@ -14,7 +14,7 @@ the site's webhook, the order is written to D1, and the kitchen gets an email
 
 ## Prices
 
-Prices live in `src/data/menu.ts`. The build generates `dist/catalog.json` from
+Prices live in `src/data/menu.ts`. The Worker build generates `dist-worker/catalog.json` (served as `/catalog.json`) from
 that file, and the Worker prices every order from the catalog — the browser
 only sends item ids, add-on ids and quantities. Change a price in one place.
 
@@ -36,9 +36,13 @@ refuses requests it cannot verify.
 | `TWILIO_FROM_NUMBER` | for SMS | Twilio number in E.164, e.g. `+1972…` |
 | `KITCHEN_SMS_TO` | for SMS | The phone that should buzz |
 | `KITCHEN_PASSWORD` | for the board | Password staff use at `/kitchen`; also signs their session cookie |
+| `CUSTOMER_LINK_SECRET` | recommended | Signs receipt links, e.g. `openssl rand -hex 32`; falls back to `STRIPE_WEBHOOK_SECRET` |
+| `APP_ORIGIN` | on a real domain | `https://daqsandoxtailstx.com`; without it, email links use the host the webhook arrived on |
 
 Email and SMS are independent: configure either or both. If both are set the
-kitchen gets both, and a failure in one does not block the other.
+kitchen gets both, and a failure in one does not block the other. Resend only
+sends from `onboarding@resend.dev` to the account's own address, so verify a
+domain and set `ORDER_EMAIL_FROM` before customers can receive receipts.
 
 When the order has an email address, the customer also gets their own email:
 a receipt with every line item and the amount paid, plus a pickup or delivery

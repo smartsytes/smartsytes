@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3003",
     "build": "tsc --noEmit && vite build",
+    "build:cpanel": "vite build --mode cpanel",
     "deploy": "node scripts/deploy.mjs",
     "typecheck": "tsc --noEmit",
     "check:checkout": "node scripts/check-checkout.mjs",

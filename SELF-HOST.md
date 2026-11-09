@@ -48,7 +48,7 @@ restaurant's traffic and D1 has a free tier; you can see usage in your dashboard
 
 ```bash
 npm ci
-npm run deploy                      # builds dist/ + dist-public/ and checks both
+npm run deploy                      # builds the Worker copy + the ordering-free cPanel copy
 npx wrangler@latest login           # opens your browser, your account
 npx wrangler@latest d1 create daqs-orders
 ```
@@ -121,7 +121,7 @@ Switching live keys is the same `secret put` commands with live values.
 
 If you want the marketing pages on the existing hosting today, this works:
 
-1. `npm ci && npm run deploy` — one command builds the site and stages both copies.
+1. `npm ci && npm run deploy` — one command builds both copies.
 2. Upload **the contents of `dist/`** (not the folder) into `public_html/`, with
    `.htaccess` included — it is committed at `public/.htaccess`, so it is in
    `dist/` after every build. Enable "show hidden files" in File Manager or the
@@ -129,15 +129,19 @@ If you want the marketing pages on the existing hosting today, this works:
 3. The site appears at whatever domain cPanel serves, with working Home, Menu,
    About, Visit, Catering, and correct URLs on refresh.
 
-What will **not** work there: the Place Order button, `/kitchen`, kitchen
-tickets, receipts, reschedule/cancel. Those need the Worker. A static upload is
-a shop window, not the restaurant's ordering system.
+`dist/` is the **ordering-free build**: `vite build --mode cpanel` starts from a
+marketing-only entry and resolves the cart and item-sheet modules the shared
+chrome touches to inert stubs, so checkout, the cart, the kitchen board, the
+ticket printer and the QR encoder are never compiled. `npm run deploy` checks
+that — if any of those chunks, an ordering route string or a `catalog.json`
+turns up in `dist/`, the release stops. The upload is therefore smaller than the
+Worker build, and there is no dead code for anyone to stumble into.
 
-The static copy now hides all of that by itself: the app probes `/api/config`,
-and when the answer is not JSON (the `.htaccess` above returns 404 for `/api/*`)
-it removes the cart, the add buttons, the checkout and the kitchen screen, and
-points pickup/delivery at the phone number. Nothing on that copy invites a
-customer into a checkout that cannot work.
+What is not there: Place Order, `/kitchen`, kitchen tickets, receipts,
+reschedule/cancel. Those need the Worker. Old links to those screens land on a
+short notice that points at the phone. A phone-ordering banner sits above every
+page, and Home, Menu and the order cards say "Call to order" instead of offering
+a checkout that cannot work.
 
 ## What I could not do from here
 

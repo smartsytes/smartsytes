@@ -1,3 +1,4 @@
+import path from "node:path";
 import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -123,13 +124,16 @@ function catalogAndApi(
   secretKey: string,
   kitchenPassword: string,
   webhookSecret: string,
+  cpanel: boolean,
 ): Plugin {
   const db = new DevOrdersDB();
 
   return {
     name: "daqs-catalog-and-api",
 
+    // The cPanel variant has no ordering API to stand in for.
     configureServer(server) {
+      if (cpanel) return;
       server.middlewares.use("/catalog.json", (_request, response) => {
         response.setHeader("content-type", "application/json; charset=utf-8");
         response.end(JSON.stringify(catalog));
@@ -186,6 +190,7 @@ function catalogAndApi(
     },
 
     generateBundle() {
+      if (cpanel) return;
       this.emitFile({
         type: "asset",
         fileName: "catalog.json",
@@ -195,23 +200,65 @@ function catalogAndApi(
   };
 }
 
+/**
+ * The cPanel build starts at a different entry and resolves the modules the
+ * marketing chrome shares with the ordering site to inert stubs. Rollup
+ * therefore never reaches checkout, the cart, the kitchen board, the ticket
+ * printer or the QR encoder, so none of that code is compiled — as opposed to
+ * shipping it and hiding it at runtime.
+ */
+function cpanelVariant(): Plugin {
+  const root = process.cwd();
+  const entry = path.resolve(root, "src/main-static.tsx");
+  const replacements: Array<[RegExp, string]> = [
+    [/(^|\/)store\/cart$/, "src/variants/static/cart.tsx"],
+    [/(^|\/)lib\/serving$/, "src/variants/static/serving.ts"],
+    [/(^|\/)components\/ItemSheet$/, "src/variants/static/ItemSheet.tsx"],
+  ];
+
+  return {
+    name: "daqs-cpanel-variant",
+    enforce: "pre",
+    resolveId(source) {
+      const bare = source.replace(/\\/g, "/");
+      // The HTML entry script, not `main-static.tsx` itself.
+      if (/(^|\/)src\/main\.tsx$/.test(bare)) return entry;
+      const specifier = bare.replace(/\.(tsx?|jsx?)$/, "");
+      for (const [pattern, target] of replacements) {
+        if (pattern.test(specifier)) return path.resolve(root, target);
+      }
+      return null;
+    },
+  };
+}
+
 // Preview hosts are supplied per-session through
 // __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS by the cloud preview runtime.
 export default defineConfig(({ mode }) => {
+  // `vite build --mode cpanel` produces the static upload: marketing pages only.
+  const cpanel = mode === "cpanel";
+
   // Inline env vars (KITCHEN_PASSWORD=… npm run dev) win over .env, which is
   // how the board gets a throwaway password during local testing.
   const env = { ...loadEnv(mode, process.cwd(), ""), ...process.env };
 
   return {
     plugins: [
+      ...(cpanel ? [cpanelVariant()] : []),
       react(),
       tailwindcss(),
       catalogAndApi(
         env.STRIPE_SECRET_KEY ?? "",
         env.KITCHEN_PASSWORD ?? "kitchen",
         env.STRIPE_WEBHOOK_SECRET ?? "",
+        cpanel,
       ),
     ],
+    build: {
+      // The Worker serves the full app; the cPanel copy is built without it.
+      outDir: cpanel ? "dist" : "dist-worker",
+      emptyOutDir: true,
+    },
     server: {
       host: "0.0.0.0",
       port: 3003,

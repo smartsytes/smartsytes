@@ -16,13 +16,43 @@ const NAV = [
   { to: "/visit", label: "Visit" },
 ];
 
+/**
+ * Shown wherever ordering cannot work: the ordering-free cPanel build (where
+ * this is decided at build time) and a full build uploaded to a plain-file
+ * host (where the /api probe says so). The answer is always the phone.
+ */
+function PhoneOrderBanner() {
+  return (
+    <div
+      role="region"
+      aria-label="Phone ordering"
+      className="border-b border-ink/15 bg-gold text-ink print:hidden"
+    >
+      <div className="shell flex flex-col items-stretch gap-2.5 py-2 text-[0.78rem] font-semibold leading-snug sm:flex-row sm:items-center sm:justify-center sm:gap-3 sm:py-2.5 sm:text-[0.8rem]">
+        <span className="flex items-start gap-2 sm:items-center">
+          <Phone className="mt-0.5 size-3.5 shrink-0 sm:mt-0" strokeWidth={2.4} />
+          Online ordering isn&apos;t available on this site — call the kitchen for
+          pickup or delivery.
+        </span>
+        <a
+          href={SITE.phoneHref}
+          className="inline-flex min-h-10 w-full shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-1 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-cream transition hover:bg-royal sm:min-h-9 sm:w-auto sm:px-3.5"
+        >
+          Call {SITE.phone}
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { count, openCart } = useCart();
   const status = getStoreStatus();
   // A static upload (cPanel) has no ordering API, so no bag and no order CTAs.
-  const ordering = useServing() !== "static";
+  const serving = useServing();
+  const ordering = serving !== "static";
 
   useBodyLock(mobileOpen);
   useEscape(mobileOpen, () => setMobileOpen(false));
@@ -38,6 +68,8 @@ function Header() {
 
   return (
     <>
+      {serving === "static" ? <PhoneOrderBanner /> : null}
+
       <div className="bg-ink text-cream/75 print:hidden">
         <div className="shell flex min-h-9 flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2 text-[0.7rem] font-medium tracking-wide">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1">

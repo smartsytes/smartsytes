@@ -8,5 +8,5 @@
       "path": "./deploy-worker.js"
     }
   ],
-  "assetsDirectory": "./dist"
+  "assetsDirectory": "./dist-public"
 }

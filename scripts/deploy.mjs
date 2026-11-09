@@ -3,15 +3,15 @@
  *
  *   npm run deploy
  *
- *   dist/         → cPanel / any Apache host. Keeps .htaccess, which is what makes
- *                   the plain-file copy hide ordering instead of offering a
- *                   checkout that cannot work there.
- *   dist-public/  → Workers / Freebuff Sites. Public build output only; the
- *                   platform rejects hidden files and source maps, and the Worker
- *                   API replaces every rule .htaccess was providing.
+ *   dist/         → cPanel / any Apache host. The ordering-free build: checkout,
+ *                   the cart and the kitchen board are never compiled, so this
+ *                   copy is smaller and has nothing to hide at runtime. Keeps
+ *                   .htaccess, which still 404s /api/*.
+ *   dist-public/  → Workers / Freebuff Sites, staged from dist-worker/ (the full
+ *                   build): ordering, receipts and the kitchen board.
  *
- * Both folders are rebuilt from the same source in one pass, so the two copies
- * can never drift. This script builds and stages; it never uploads or publishes.
+ * Both come from the same source in one pass, so prices, copy and design can
+ * never drift. This script builds and stages; it never uploads or publishes.
  */
 
 import { spawnSync } from "node:child_process";
@@ -20,7 +20,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DIST = path.join(root, "dist");
+const CPANEL = path.join(root, "dist");
+const WORKER = path.join(root, "dist-worker");
 const STAGED = path.join(root, "dist-public");
 
 const bytes = (n) => {
@@ -29,9 +30,36 @@ const bytes = (n) => {
   return `${n} B`;
 };
 
+// Chunk names that only the ordering build can produce.
+const ORDERING_CHUNKS = /(Kitchen|Checkout|OrderManage|CartDrawer|MobileCartBar|ItemSheet)/;
+
+// Strings that only exist in ordering/kitchen code — routes and UI copy, never
+// marketing prose (the menu page does say "give the kitchen a call").
+const ORDERING_MARKERS = [
+  "/api/checkout",
+  "/api/config",
+  "/api/stripe",
+  "/api/kitchen",
+  "Add to order",
+  "window.print",
+  "qrcode",
+];
+
 function fail(message) {
   console.error(`\n✗ ${message}`);
   process.exit(1);
+}
+
+function run(script, label) {
+  console.log(`\n${label}`);
+  const result = spawnSync("npm", ["run", script], {
+    cwd: root,
+    stdio: "inherit",
+    shell: process.platform === "win32",
+  });
+  if (result.status !== 0) {
+    fail(`${script} failed (exit ${result.status ?? "signal"}); nothing was staged`);
+  }
 }
 
 async function walk(dir) {
@@ -45,7 +73,7 @@ async function walk(dir) {
 }
 
 async function summarise(dir, label) {
-  const files = await walk(dir);
+  const files = await walk(dir).catch(() => fail(`${label}: ${path.relative(root, dir)} was not built`));
   for (const file of files) {
     if (file.symlink) fail(`${label}: ${path.relative(root, file.path)} is a symlink; upload real files only`);
   }
@@ -53,46 +81,102 @@ async function summarise(dir, label) {
   return { files, size };
 }
 
-// 1. Build (typecheck + vite). A failed build must stop the release.
-console.log("building…\n");
-const build = spawnSync("npm", ["run", "build"], { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
-if (build.status !== 0) fail(`build failed (exit ${build.status ?? "signal"}); nothing was staged`);
+async function scriptBytes(dir, files) {
+  const scripts = files.filter((file) => file.name.endsWith(".js"));
+  const sizes = await Promise.all(scripts.map((file) => fs.stat(file.path)));
+  return sizes.reduce((total, stat) => total + stat.size, 0);
+}
 
-// 2. Clear the old staging copy so a removed asset cannot linger.
+async function entryBundle(dir, label) {
+  const html = await fs.readFile(path.join(dir, "index.html"), "utf8").catch(() =>
+    fail(`${label}: index.html is missing`),
+  );
+  const ref = html.match(/assets\/index-[A-Za-z0-9_-]+\.js/)?.[0] ?? fail(`${label}: index.html has no JS bundle`);
+  await fs.access(path.join(dir, ref)).catch(() => fail(`${label}: index.html references ${ref}, which was not built`));
+  return ref;
+}
+
+// 1. Build both variants from the same source. A failed build must stop the release.
+run("build", "building the Worker copy (full app)…");
+run("build:cpanel", "building the cPanel copy (no ordering)…");
+
+// 2. Clear the old staging copy so a removed asset cannot linger, then stage the
+//    full build, dropping what the Worker platform rejects.
 await fs.rm(STAGED, { recursive: true, force: true });
 await fs.mkdir(STAGED, { recursive: true });
-
-// 3. Copy the build, dropping what the Worker platform rejects. Everything else
-//    in dist/ is already public build output.
-await fs.cp(DIST, STAGED, {
+await fs.cp(WORKER, STAGED, {
   recursive: true,
   filter: (source) => {
     const name = path.basename(source);
-    if (source === DIST) return true;
+    if (source === WORKER) return true;
     if (name.startsWith(".")) return false;
     if (name.endsWith(".map")) return false;
     return true;
   },
 });
 
-// 4. Verify what was actually produced, rather than assuming the copy worked.
-const cpanel = await summarise(DIST, "cPanel copy");
-const worker = await summarise(STAGED, "Worker copy");
+const cpanel = await summarise(CPANEL, "cPanel copy");
+const workerBuild = await summarise(WORKER, "Worker copy");
+const staged = await summarise(STAGED, "Worker copy");
 
-const html = await fs.readFile(path.join(STAGED, "index.html"), "utf8").catch(() => fail("staging is missing index.html"));
-const bundleRef = html.match(/assets\/index-[A-Za-z0-9_-]+\.js/)?.[0] ?? fail("index.html does not reference a JS bundle");
-await fs.access(path.join(STAGED, bundleRef)).catch(() => fail(`index.html references ${bundleRef}, which was not staged`));
+// 3. Both builds must be complete before anything is considered shippable.
+const cpanelBundle = await entryBundle(CPANEL, "cPanel copy");
+const workerBundle = await entryBundle(WORKER, "Worker copy");
+await fs.access(path.join(WORKER, "catalog.json")).catch(() =>
+  fail("the Worker build is missing catalog.json; the Worker prices orders from it"),
+);
 
-const htaccess = path.join(DIST, ".htaccess");
+// 4. The whole point of the cPanel copy: no ordering code reaches it.
+const strays = cpanel.files.filter((file) => ORDERING_CHUNKS.test(file.name));
+if (strays.length > 0) {
+  fail(`the cPanel build still ships ordering chunks: ${strays.map((f) => path.relative(CPANEL, f.path)).join(", ")}`);
+}
+
+await fs.access(path.join(CPANEL, "catalog.json")).then(
+  () => fail("the cPanel build contains catalog.json; it has no ordering to price"),
+  () => undefined,
+);
+
+const leaks = [];
+for (const file of cpanel.files.filter((entry) => entry.name.endsWith(".js"))) {
+  const text = await fs.readFile(file.path, "utf8");
+  for (const marker of ORDERING_MARKERS) {
+    if (text.includes(marker)) leaks.push(`${path.relative(CPANEL, file.path)} → ${marker}`);
+  }
+}
+if (leaks.length > 0) {
+  fail(`the cPanel bundle still contains ordering code:\n  ${leaks.join("\n  ")}`);
+}
+
+// 5. …and the full build must still contain everything it is supposed to.
+const hasChunk = (pattern) => workerBuild.files.some((file) => pattern.test(path.relative(WORKER, file.path)));
+if (!hasChunk(/(^|\/)Kitchen-[^/]*\.js$/)) fail("the Worker build lost its Kitchen chunk");
+if (!hasChunk(/(^|\/)KitchenTicket-[^/]*\.js$/)) fail("the Worker build lost its KitchenTicket chunk");
+
+const cpanelScripts = await scriptBytes(CPANEL, cpanel.files);
+const workerScripts = await scriptBytes(WORKER, workerBuild.files);
+if (cpanelScripts >= workerScripts) {
+  fail(`the cPanel build is not smaller (${bytes(cpanelScripts)} of JS vs ${bytes(workerScripts)})`);
+}
+
+// 6. The cPanel copy is useless on Apache without `.htaccess`, which is what
+//    hides /api and gives the SPA its fallback.
+const htaccess = path.join(CPANEL, ".htaccess");
 const htaccessStat = await fs.stat(htaccess).catch(() => null);
 if (!htaccessStat) fail("dist/.htaccess is missing — the cPanel copy would offer ordering it cannot serve");
 
-const leaked = worker.files.filter((file) => file.name.startsWith(".") || file.name.endsWith(".map"));
-if (leaked.length > 0) fail(`staging leaked non-public files: ${leaked.map((f) => path.relative(STAGED, f.path)).join(", ")}`);
+const leakedToStaging = staged.files.filter((file) => file.name.startsWith(".") || file.name.endsWith(".map"));
+if (leakedToStaging.length > 0) {
+  fail(`staging leaked non-public files: ${leakedToStaging.map((f) => path.relative(STAGED, f.path)).join(", ")}`);
+}
 
-// 5. Report exactly what each host gets.
-console.log(`\n✓ build          ${bundleRef}`);
-console.log(`  cPanel         dist/         ${cpanel.files.length} files, ${bytes(cpanel.size)}, .htaccess included (${bytes(htaccessStat.size)})`);
-console.log(`  Workers/Sites  dist-public/  ${worker.files.length} files, ${bytes(worker.size)}, no hidden files or source maps`);
+// 7. Report exactly what each host gets.
+const saved = workerScripts - cpanelScripts;
+const percent = Math.round((saved / workerScripts) * 100);
+console.log(`\n✓ Worker build   ${workerBundle}`);
+console.log(`  Workers/Sites  dist-public/  ${staged.files.length} files, ${bytes(staged.size)}, JS ${bytes(workerScripts)}`);
+console.log(`✓ cPanel build   ${cpanelBundle}`);
+console.log(`  cPanel         dist/         ${cpanel.files.length} files, ${bytes(cpanel.size)}, JS ${bytes(cpanelScripts)}`);
+console.log(`  .htaccess      included (${bytes(htaccessStat.size)})  ·  ordering code left out: ${bytes(saved)} JS (${percent}%)`);
 console.log(`\n  upload the CONTENTS of dist/ to public_html (show hidden files), or deploy
-  dist-public/ via sites.deploy.manifest.json. Same source, same bundle hash.`);
+  dist-public/ via sites.deploy.manifest.json.`);

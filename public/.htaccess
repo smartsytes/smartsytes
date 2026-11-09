@@ -7,8 +7,9 @@ DirectoryIndex index.html
   RewriteEngine On
 
   # There is no API on this host. Answer honestly with 404 instead of letting
-  # the app shell come back as 200 text/html, so the site can tell it is being
-  # served as plain files and hide ordering rather than offering a dead button.
+  # the app shell come back as 200 text/html: if a full build is ever served
+  # from plain files it probes /api/config and hides ordering, and the
+  # ordering-free build (npm run deploy → dist/) never ships a checkout at all.
   RewriteRule ^api/ - [R=404,L]
 
   # Force https
