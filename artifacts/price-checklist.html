@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daqs &amp; Oxtails — price confirmation checklist</title>
+    <style>
+      @page {
+        size: letter;
+        margin: 11mm 12mm;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font: 10.5px/1.32 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: #101820;
+      }
+
+      header {
+        border-bottom: 2px solid #101820;
+        padding-bottom: 4px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      h1 {
+        font-size: 16px;
+        margin: 0;
+        letter-spacing: -0.01em;
+      }
+
+      .meta {
+        font-size: 8.5px;
+        color: #555;
+        text-align: right;
+        line-height: 1.3;
+      }
+
+      .intro {
+        font-size: 9px;
+        color: #444;
+        margin: 0 0 7px;
+      }
+
+      .cols {
+        column-count: 2;
+        column-gap: 9mm;
+        column-fill: balance;
+      }
+
+      section {
+        break-inside: avoid;
+        margin: 0 0 7px;
+      }
+
+      h2 {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        margin: 0 0 2px;
+        padding-bottom: 1px;
+        border-bottom: 1px solid #101820;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        font-size: 7.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #666;
+        font-weight: 600;
+        text-align: left;
+        padding: 1px 3px;
+      }
+
+      td {
+        padding: 1.6px 3px;
+        border-bottom: 0.5px solid #d5d5d5;
+        vertical-align: middle;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .price {
+        text-align: right;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+        width: 46px;
+      }
+
+      .tick {
+        width: 22px;
+      }
+
+      .tick span {
+        display: block;
+        width: 11px;
+        height: 11px;
+        border: 1px solid #777;
+        border-radius: 1px;
+      }
+
+      .blank {
+        width: 52px;
+      }
+
+      .note {
+        color: #666;
+        font-size: 8px;
+      }
+
+      .ask {
+        font-size: 9px;
+        margin: 0;
+        padding: 2px 0 0;
+        color: #333;
+      }
+
+      footer {
+        margin-top: 9px;
+        border-top: 2px solid #101820;
+        padding-top: 4px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        font-size: 8.5px;
+        color: #333;
+      }
+
+      .line {
+        display: inline-block;
+        border-bottom: 1px solid #777;
+        min-width: 120px;
+      }
+
+      .ok {
+        font-size: 8px;
+        color: #555;
+        margin: 6px 0 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Daqs &amp; Oxtails — price confirmation checklist</h1>
+      <p class="meta">
+        Prices currently on the website<br />
+        that no public source confirms<br />
+        Prepared 9 Nov 2026
+      </p>
+    </header>
+
+    <p class="intro">
+      Tick each price that is correct, or write the real one beside it. Anything left blank stays
+      unconfirmed. The 11 plates already matching the old site's published menu are <em>not</em>
+      listed here — no need to check those.
+    </p>
+
+    <div class="cols">
+      <section>
+        <h2>Plates &amp; sides</h2>
+        <table>
+          <thead>
+            <tr><th class="tick">OK</th><th>Item</th><th class="price">On site</th><th class="blank">Correct</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="tick"><span></span></td><td>Gumbo</td><td class="price">$18.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Cajun Fried Corn</td><td class="price">$7.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Three-Cheese Mac</td><td class="price">$6.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Candied Yams</td><td class="price">$6.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Collard Greens</td><td class="price">$6.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Cornbread (side)</td><td class="price">$3.99</td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Weekday lunch — Mon–Fri, 12–4</h2>
+        <table>
+          <thead>
+            <tr><th class="tick">OK</th><th>Item</th><th class="price">On site</th><th class="blank">Correct</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="tick"><span></span></td><td>Lunch Oxtail Pasta</td><td class="price">$14.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>6 Wings &amp; Fries</td><td class="price">$12.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>1 PC Catfish &amp; Fries</td><td class="price">$12.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>10 PC Shrimp &amp; Fries</td><td class="price">$12.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>½ LB Shrimp Boil</td><td class="price">$12.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Veggie Lunch</td><td class="price">$11.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Chicken &amp; Waffle</td><td class="price">$14.99</td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Frozen daqs — 21+ with ID</h2>
+        <table>
+          <thead>
+            <tr><th class="tick">OK</th><th>Item</th><th class="price">On site</th><th class="blank">Correct</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="tick"><span></span></td><td>Strawberry Daiquiri, 12 oz</td><td class="price">$10.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Mango Daiquiri, 12 oz</td><td class="price">$10.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Blue Razz Daiquiri, 12 oz</td><td class="price">$10.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Peach Daiquiri, 12 oz</td><td class="price">$10.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Upgrade any to 24 oz</td><td class="price">+$5.00</td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Add-ons</h2>
+        <table>
+          <thead>
+            <tr><th class="tick">OK</th><th>Add-on (on which dish)</th><th class="price">On site</th><th class="blank">Correct</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="tick"><span></span></td><td>Extra oxtail — pasta</td><td class="price">+$8.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Garlic bread — pasta</td><td class="price">+$3.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Extra Mr. Cajun butter — boiled shrimp</td><td class="price">+$1.50</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Add sausage — boiled shrimp</td><td class="price">+$4.50</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Extra house sauce — 10 pc shrimp</td><td class="price">+$1.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Extra fillet — catfish</td><td class="price">+$7.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Make it 12 wings — wing basket</td><td class="price">+$10.50</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Extra sauce — wing basket</td><td class="price">+$1.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Extra rice — gumbo</td><td class="price">+$2.00</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Cornbread — gumbo</td><td class="price">+$3.00</td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Catering</h2>
+        <table>
+          <thead>
+            <tr><th class="tick">OK</th><th>Package</th><th class="price">From</th><th class="blank">Correct</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="tick"><span></span></td><td>The Sunday Table, feeds 10–12</td><td class="price">$219</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Boil for the Block, feeds 12–15</td><td class="price">$289</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Game Day Wings, feeds 10–12</td><td class="price">$129</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Banana pudding tray, serves ~12</td><td class="price">$45.99</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Cookie pudding tray, serves ~12</td><td class="price">$45.99</td><td></td></tr>
+          </tbody>
+        </table>
+        <p class="ask"><strong>No price set (quote only):</strong> Cajun fried corn tray · collard greens tray · candied yams tray · gallon daqs</p>
+      </section>
+
+      <section>
+        <h2>Charged at checkout</h2>
+        <table>
+          <tbody>
+            <tr><td class="tick"><span></span></td><td>Sales tax rate</td><td class="price">8.25%</td><td></td></tr>
+            <tr><td class="tick"><span></span></td><td>Delivery fee</td><td class="price">$4.99</td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <p class="ok">
+      Already confirmed against the old site's published menu (no action needed): Oxtail Pasta
+      $25.99 · Turkey Neck Plate $28.99 · Turkey Neck &amp; Beans $25.99 · Turkey Neck Boil $24.99
+      · Veggie Plate $13.99 · Cajun Boiled Shrimp $25.99 · 10 PC Shrimp $16.99 · 3 PC Catfish
+      &amp; Fries $28.99 · 6 PC Wing Basket $12.99 · Oxtail Eggrolls $13.99 · Daq Pack $50.99.
+    </p>
+
+    <footer>
+      <span>Checked by <span class="line"></span></span>
+      <span>Date <span class="line" style="min-width: 80px"></span></span>
+      <span>Prices approved by <span class="line"></span></span>
+    </footer>
+  </body>
+</html>

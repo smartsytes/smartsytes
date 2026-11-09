@@ -1,0 +1,39 @@
+{
+  // Hosting config for YOUR OWN Cloudflare account (not the Freebuff platform).
+  // Full runbook: SELF-HOST.md
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "daqs-and-oxtails",
+  "main": "deploy-worker.js",
+  "compatibility_date": "2025-06-01",
+  "observability": { "enabled": true },
+
+  // The Vite build. The Worker answers /api/* itself and falls back to
+  // index.html for client routes, so Apache-style rewrites are not needed.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "none"
+  },
+
+  // Replace database_id with the value printed by:
+  //   npx wrangler@latest d1 create daqs-orders
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "daqs-orders",
+      "database_id": "REPLACE_WITH_DATABASE_ID_FROM_D1_CREATE"
+    }
+  ]
+
+  // Uncomment once daqsandoxtailstx.com is an active zone in this Cloudflare
+  // account (nameservers changed at the registrar). Until then the Worker is
+  // reachable on its workers.dev address.
+  // ,"routes": [
+  //   { "pattern": "daqsandoxtailstx.com", "custom_domain": true },
+  //   { "pattern": "www.daqsandoxtailstx.com", "custom_domain": true }
+  // ]
+
+  // Uncomment only after the domain actually serves this Worker, so receipt,
+  // kitchen and customer links use the domain instead of the workers.dev host.
+  // ,"vars": { "APP_ORIGIN": "https://daqsandoxtailstx.com" }
+}

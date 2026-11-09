@@ -1,0 +1,12 @@
+{
+  "entrypoint": "deploy-worker.js",
+  "compatibilityDate": "2025-06-01",
+  "modules": [
+    {
+      "name": "deploy-worker.js",
+      "type": "esm",
+      "path": "./deploy-worker.js"
+    }
+  ],
+  "assetsDirectory": "./dist"
+}
